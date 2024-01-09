@@ -13,6 +13,11 @@
         <h2>Score:</h2>
         <p>{{ sem }}</p>
     {% endif %}
+    <ul>
+        {% for word, score in inputs|reverse %}
+        <li>{{word}}: {{score}}%</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
 

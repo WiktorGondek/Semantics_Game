@@ -18,22 +18,6 @@ def rescale(sim_score):
         return sim_score * 0.5
 
 
-def semantics(word, input_word):
-    model = SentenceTransformer("all-mpnet-base-v2")
-
-    embeddings_word = model.encode(word)
-    embeddings_input = model.encode(input_word)
-
-    similarity_matrix_same = util.cos_sim(embeddings_word, embeddings_word)
-    similarity_matrix_input = util.cos_sim(embeddings_word, embeddings_input)
-
-    similarity_percent = (
-        rescale(similarity_matrix_input.item()) / similarity_matrix_same.item()
-    ) * 100
-
-    return "{0:1.2f}".format(similarity_percent) + " %"
-
-
 def random_word_generator():
     api_url = "https://random-word-api.vercel.app/api?words=1"
 
@@ -62,12 +46,30 @@ def random_word_generator():
     return {"random_word": random_word, "thesaurus": thes_dict}
 
 
+def semantics(word, input_word):
+    model = SentenceTransformer("all-mpnet-base-v2")
+
+    embeddings_word = model.encode(word)
+    embeddings_input = model.encode(input_word)
+
+    similarity_matrix_same = util.cos_sim(embeddings_word, embeddings_word)
+    similarity_matrix_input = util.cos_sim(embeddings_word, embeddings_input)
+
+    rescaled_score = rescale(similarity_matrix_input.item())
+
+    similarity_percentage = (
+        "{0:1.2f}".format((rescaled_score / similarity_matrix_same.item()) * 100) + " %"
+    )
+
+    return {"rescaled_score": rescaled_score, "percentage": similarity_percentage}
+
+
 def main(your_input, random_word):
     while True:
         try:
-            res = semantics(random_word, your_input)
+            res = semantics(random_word, your_input)["percentage"]
             print(res)
             return res
         except KeyboardInterrupt:
-            print("Exiting...")
+            print(" Exiting...")
             break

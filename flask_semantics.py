@@ -6,15 +6,21 @@ from semantics import main, random_word_generator
 
 app = Flask(__name__)
 
-random_word = random_word_generator()["random_word"]
+# random_word = random_word_generator()["random_word"]
+inputs = {}
+random_word = "treasure"
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
         user_input = request.form["text_input"]
-        sem = main(user_input, "untidy")
-        return render_template("index.html", sem=sem)
+        sem = main(user_input, random_word)
+        inputs[user_input] = sem
+        # inputs_sort = sorted(
+        #    inputs.items(), key=lambda x: float(x[1][:-1]), reverse=True
+        # )
+        return render_template("index.html", sem=sem, inputs=inputs.items())
     return render_template("index.html")
 
 
