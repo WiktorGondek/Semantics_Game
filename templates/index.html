@@ -7,8 +7,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /*justify-content: center;*/
-            margin:0;
+            margin: 0;
             padding: 0;
        }
         .input-container {
@@ -18,49 +17,39 @@
             align-items: center;
             margin: 20px;
             padding: 20px;
+     
         }
         .table-container {
             width: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
-
-        /*.main-container {
-            max-width: 1200px;
-            margin: 20px;
-            padding: 20px;
+        }
+        #myForm {
             display: flex;
-            flex-direction: column;
+            flex-direction: unset;
             align-items: center;
-        }*/
-        /*.container {
-            width: 1600px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .content {
-            text-align: center;
-            margin-bottom: 20px;
-        }*/
-        form {
-            margin-bottom: 20px;
-        }
+            margin: 10px;
 
+        }
+        #textInput {
+            margin-right: 10px;
+        }
         table {
-            border-collapse: collapse;
-            width: 100%;
+            width: 60%;
             margin: auto;
         }
-        th, td {
-            text-align: left;
-             /*padding: 8px;*/
-
+        td, th {
+            padding: 5px;
         }
+
         td:first-child,
         th:first-child {
-            width: 10%; 
+            width: 10%;
+            text-align: left;
             word-wrap: break-word;
             overflow: hidden;
+            margin-right: 10px;
         }
 
         td:nth-child(2),
@@ -70,7 +59,9 @@
     
         td:last-child,
         th:last-child {
-            width: 10%; 
+            width: 10%;
+            text-align: right;
+            margin-left: 10px;
         }
         .bar-container {
             width: 100%;
@@ -89,7 +80,7 @@
     <div class="input-container">
         <h1>Semantics game</h1>
         <form method="post", id="myForm">
-            <textarea name="text_input" rows="1" cols="20", id="textInput" autofocus></textarea><br><br>
+            <textarea name="text_input" rows="1" cols="20", id="textInput" autofocus></textarea>
             <input type="submit" value="Submit">
         </form>
     </div>
