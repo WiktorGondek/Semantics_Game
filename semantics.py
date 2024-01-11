@@ -58,7 +58,7 @@ def semantics(word, input_word):
     rescaled_score = rescale(similarity_matrix_input.item())
 
     similarity_percentage = (
-        "{0:1.2f}".format((rescaled_score / similarity_matrix_same.item()) * 100) + " %"
+        "{0:1.2f}".format((rescaled_score / similarity_matrix_same.item()) * 100) + "%"
     )
 
     return {"rescaled_score": rescaled_score, "percentage": similarity_percentage}

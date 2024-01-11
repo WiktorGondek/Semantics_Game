@@ -17,10 +17,14 @@ def index():
         user_input = request.form["text_input"]
         sem = main(user_input, random_word)
         inputs[user_input] = sem
+        float_score = float(sem[:-1])
+        print(float_score, type(float_score))
         # inputs_sort = sorted(
         #    inputs.items(), key=lambda x: float(x[1][:-1]), reverse=True
         # )
-        return render_template("index.html", sem=sem, inputs=inputs.items())
+        return render_template(
+            "index.html", sem=sem, inputs=inputs.items(), percent=float_score
+        )
     return render_template("index.html")
 
 

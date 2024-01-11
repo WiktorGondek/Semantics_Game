@@ -2,22 +2,123 @@
 <html>
 <head>
     <title>Semantics game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /*justify-content: center;*/
+            margin:0;
+            padding: 0;
+       }
+        .input-container {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+            padding: 20px;
+        }
+        .table-container {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+        /*.main-container {
+            max-width: 1200px;
+            margin: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }*/
+        /*.container {
+            width: 1600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .content {
+            text-align: center;
+            margin-bottom: 20px;
+        }*/
+        form {
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: auto;
+        }
+        th, td {
+            text-align: left;
+             /*padding: 8px;*/
+
+        }
+        td:first-child,
+        th:first-child {
+            width: 10%; 
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+
+        td:nth-child(2),
+        th:nth-child(2) {
+            width: 80%; 
+        }
+    
+        td:last-child,
+        th:last-child {
+            width: 10%; 
+        }
+        .bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: #f2f2f2;
+            margin-bottom: 5px;
+        }
+        .bar {
+            height: 10px;
+            background-color: #3498db;
+        }
+    </style>
+
 </head>
 <body>
-    <h1>Semantics game</h1>
-    <form method="post">
-        <textarea name="text_input" rows="1" cols="20"></textarea><br><br>
-        <input type="submit" value="Submit">
-    </form>
-    {% if sem %}
-        <h2>Score:</h2>
-        <p>{{ sem }}</p>
-    {% endif %}
-    <ul>
-        {% for word, score in inputs|reverse %}
-        <li>{{word}}: {{score}}%</li>
-        {% endfor %}
-    </ul>
+    <div class="input-container">
+        <h1>Semantics game</h1>
+        <form method="post", id="myForm">
+            <textarea name="text_input" rows="1" cols="20", id="textInput" autofocus></textarea><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table>
+            {% for word, score in inputs|reverse %}
+            <tr>
+                <td> {{ word }}</td>
+                <td>
+                    <div class="bar-container">
+                        <div  class="bar" style="width: {{ score }};"></div>
+                    </div>
+                </td>
+                <td>{{ score }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <script>
+        window.onload = function() {
+            document.getElementById("textInput").addEventListener("keydown", function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    document.getElementById("myForm").submit();
+                }
+            });
+        };
+    </script>
 </body>
 </html>
 
