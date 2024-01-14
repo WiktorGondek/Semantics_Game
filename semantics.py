@@ -68,7 +68,7 @@ def main(your_input, random_word):
     while True:
         try:
             res = semantics(random_word, your_input)["percentage"]
-            print(res)
+            # print(res)
             return res
         except KeyboardInterrupt:
             print(" Exiting...")

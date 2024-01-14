@@ -9,21 +9,36 @@ app = Flask(__name__)
 # random_word = random_word_generator()["random_word"]
 inputs = {}
 random_word = "treasure"
+previous = None
+previous_word = None
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
+        global previous, previous_word
         user_input = request.form["text_input"]
-        sem = main(user_input, random_word)
-        inputs[user_input] = sem
-        float_score = float(sem[:-1])
-        print(float_score, type(float_score))
-        # inputs_sort = sorted(
-        #    inputs.items(), key=lambda x: float(x[1][:-1]), reverse=True
-        # )
+
+        if previous:
+            inputs[previous_word] = previous
+            current = main(user_input, random_word)
+            previous = current
+            print(previous)
+            previous_word = user_input
+        else:
+            current = main(user_input, random_word)
+            previous = current
+            print(previous)
+            previous_word = user_input
+
+        inputs_sort = sorted(
+            inputs.items(), key=lambda x: float(x[1][:-1]), reverse=True
+        )
         return render_template(
-            "index.html", sem=sem, inputs=inputs.items(), percent=float_score
+            "index.html",
+            input_word=user_input,
+            current=current,
+            inputs=inputs_sort,
         )
     return render_template("index.html")
 

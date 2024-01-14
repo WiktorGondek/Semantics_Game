@@ -86,8 +86,19 @@
     </div>
 
     <div class="table-container">
-        <table>
-            {% for word, score in inputs|reverse %}
+        <table id="Current">
+            <tr> 
+                <td> {{ input_word }} </td>
+                <td>
+                    <div class="bar-container">
+                        <div  class="bar" style="width: {{ current }};"></div>
+                    </div>
+                </td>
+                <td> {{ current }} </td>
+            </tr>
+        </table>
+        <table id="Ranked">
+            {% for word, score in inputs %}
             <tr>
                 <td> {{ word }}</td>
                 <td>
