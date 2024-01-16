@@ -55,19 +55,54 @@ def semantics(word, input_word):
     similarity_matrix_same = util.cos_sim(embeddings_word, embeddings_word)
     similarity_matrix_input = util.cos_sim(embeddings_word, embeddings_input)
 
-    rescaled_score = rescale(similarity_matrix_input.item())
+    # rescaled_score = rescale(similarity_matrix_input.item())
+    rescaled_scores = [rescale(i) for i in similarity_matrix_input.tolist()[0]]
 
-    similarity_percentage = (
-        "{0:1.2f}".format((rescaled_score / similarity_matrix_same.item()) * 100) + "%"
+    semant_dict = dict(
+        zip(
+            input_word if isinstance(input_word, list) else [input_word],
+            rescaled_scores,
+        )
     )
+    return semant_dict
 
-    return {"rescaled_score": rescaled_score, "percentage": similarity_percentage}
+    # similarity_percentage = (
+    #    "{0:1.2f}".format((rescaled_score / similarity_matrix_same.item()) * 100) + "%"
+    # )
+    # similarity_percentage = [
+    #    "{0:1.2f}".format((i / similarity_matrix_same.item()) * 100) + "%"
+    #    for i in rescaled_score
+    # ]
+
+    # return {"rescaled_scores": rescaled_score, "percentage": similarity_percentage}
+
+
+def provide_hint(random_word, synonyms, highest_score):
+    syn_scores = semantics(random_word, synonyms)
+    syn_scores_higher = {
+        synonym: score
+        for synonym, score in syn_scores.items()
+        if score > highest_score / 100
+    }
+    sorted_syn_scores_higher = sorted(syn_scores_higher.items(), key=lambda x: x[1])
+
+    if sorted_syn_scores_higher:
+        synonym, synonym_score = sorted_syn_scores_higher[0]
+        return synonym, synonym_score
+    else:
+        return "No higher score exists!"
+
+    # syn_scores_higher = sorted([i for i in syn_scores if i > highest_score / 100])
+    # print(syn_scores_higher)
+    # return syn_scores_higher
+    # except:
+    # return "No higher score exists!"
 
 
 def main(your_input, random_word):
     while True:
         try:
-            res = semantics(random_word, your_input)["percentage"]
+            res = semantics(random_word, your_input)
             # print(res)
             return res
         except KeyboardInterrupt:

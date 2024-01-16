@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request
 
-from semantics import main, random_word_generator
+from semantics import main, random_word_generator, provide_hint
 
 app = Flask(__name__)
 
@@ -21,24 +21,40 @@ def index():
 
         if previous:
             inputs[previous_word] = previous
-            current = main(user_input, random_word)
+            current = main(user_input, random_word)[user_input]
             previous = current
-            print(previous)
             previous_word = user_input
         else:
-            current = main(user_input, random_word)
+            current = main(user_input, random_word)[user_input]
             previous = current
-            print(previous)
             previous_word = user_input
 
-        inputs_sort = sorted(
-            inputs.items(), key=lambda x: float(x[1][:-1]), reverse=True
-        )
+        inputs_sort = sorted(inputs.items(), key=lambda x: float(x[1]), reverse=True)
+        print(inputs_sort)
+        inputs_sort_percent = {
+            word: "{:.2%}".format(float(score)) for word, score in inputs_sort
+        }
+        print(inputs_sort_percent)
+        current_percent = "{:.2%}".format(current)
+
+        synonyms = ["money", "ship", "island", "riches", "pirates", "silver"]
+        # if len(inputs_sort) > 1:
+        #    hint = provide_hint(
+        #        random_word, synonyms, float(inputs_sort[0][1].replace("%", ""))
+        #    )
+        # else:
+        #    hint = "No hints available"
+        # try:
+        #    hint = provide_hint(synonyms, inputs_sort[0][1].replace("%", ""))
+        # except:
+        #    hint = "No hints available"
+        # print(hint)
+
         return render_template(
             "index.html",
             input_word=user_input,
-            current=current,
-            inputs=inputs_sort,
+            current=current_percent,
+            inputs=inputs_sort_percent.items(),
         )
     return render_template("index.html")
 

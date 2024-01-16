@@ -35,6 +35,12 @@
         #textInput {
             margin-right: 10px;
         }
+        #hint {
+            display: none;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+        }
         #Current {
             font-size: 18px;
             margin-bottom: 30px;
@@ -88,6 +94,8 @@
             <textarea name="text_input" rows="1" cols="20", id="textInput" autofocus></textarea>
             <input type="submit" value="Submit">
         </form>
+        <button onclick="showHint()">Get Hint</button>
+        <div id="hint">Hint: {{ hint }} </div>
     </div>
 
     <div class="table-container">
@@ -125,6 +133,17 @@
                 }
             });
         };
+    </script>
+
+    <script>
+        function showHint() {
+                    var hintElement = document.getElementById("hint");
+                    if (hintElement.style.display === "none") {
+                                hintElement.style.display = "block";
+                            } else {
+                                        hintElement.style.display = "none";
+                                    }
+                }
     </script>
 </body>
 </html>
