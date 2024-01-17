@@ -94,8 +94,10 @@
             <textarea name="text_input" rows="1" cols="20", id="textInput" autofocus></textarea>
             <input type="submit" value="Submit">
             <input type="hidden" name="get_hints" id="getHintsInput" value="">
+            <input type="hidden" name="restart_game" id="restart" value="">
         </form>
         <button type="button" onclick="getHint()">Get Hint</button>
+        <button type="button" onclick="restartGame()">Restart</button>
     </div>
     <div class="table-container">
         <table id="Current">
@@ -131,14 +133,17 @@
                     document.getElementById("myForm").submit();
                 }
             });
-
         };
 
         function getHint() {
                     document.getElementById("getHintsInput").value = "true";
                     document.getElementById("myForm").submit();
+        }
+        function restartGame() {
+                    document.getElementById("restart").value = "true";
+                    document.getElementById("myForm").submit();
                 }
-        
+
     </script>
 
 

@@ -1,38 +1,91 @@
 #!/usr/bin/env python3
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 
 from semantics import main, random_word_generator, provide_hint
 
 app = Flask(__name__)
+app.secret_key = "secret_key"
+
 
 # random_word = random_word_generator()["random_word"]
-inputs = {}
-random_word = "treasure"
-previous = None
-previous_word = None
-synonyms = ["money", "ship", "island", "riches", "pirates", "silver"]
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global inputs_sort
-    hint = None
-    get_hints = request.form.get("get_hints")
+    # Initialize session variables
+    if "previous" not in session:
+        session["previous"] = None
 
-    if request.method == "POST":
-        print(request.form)
-        global previous, previous_word
+    if "previous_word" not in session:
+        session["previous_word"] = None
 
-        if get_hints:
-            hints = provide_hint(random_word, synonyms, inputs_sort[0][1])
-            if hints:
-                inputs[previous_word] = previous
-                user_input, current = hints
-                previous = current
-                previous_word = user_input
+    if "inputs" not in session:
+        session["inputs"] = {}
+
+    if "inputs_sort" not in session:
+        session["inputs_sort"] = []
+
+    if "current" not in session:
+        session["current"] = 0.0
+
+    previous = session["previous"]
+    previous_word = session["previous_word"]
+    inputs = session["inputs"]
+    inputs_sort = session["inputs_sort"]
+    current = session["current"]
+
+    random_word = "treasure"
+    synonyms = ["money", "ship", "island", "riches", "pirates", "silver"]
+
+    restart = request.form.get("restart_game")
+    if restart:
+        print("bogos binted")
+        [session.pop(key) for key in list(session.keys())]
+
+    else:
+        hint = None
+        get_hints = request.form.get("get_hints")
+
+        if request.method == "POST":
+            print(request.form)
+
+            if get_hints:
+                if inputs_sort:
+                    hints = provide_hint(
+                        random_word, synonyms, max([inputs_sort[0][1], current])
+                    )
+                else:
+                    hints = provide_hint(random_word, synonyms, 0.0)
+
+                if hints:
+                    inputs[previous_word] = previous
+                    user_input, current = hints
+                    previous = current
+                    previous_word = user_input
+                else:
+                    user_input, current = "", 0.0
+
+                inputs_sort = sorted(
+                    inputs.items(), key=lambda x: float(x[1]), reverse=True
+                )
+                inputs_sort_percent = {
+                    word: "{:.2%}".format(float(score)) for word, score in inputs_sort
+                }
+                current_percent = "{:.2%}".format(current)
+
             else:
-                user_input, current = "", 0.0
+                user_input = request.form["text_input"]
+
+                if previous:
+                    inputs[previous_word] = previous
+                    current = main(user_input, random_word)[user_input]
+                    previous = current
+                    previous_word = user_input
+                else:
+                    current = main(user_input, random_word)[user_input]
+                    previous = current
+                    previous_word = user_input
 
             inputs_sort = sorted(
                 inputs.items(), key=lambda x: float(x[1]), reverse=True
@@ -42,55 +95,19 @@ def index():
             }
             current_percent = "{:.2%}".format(current)
 
-        else:
-            user_input = request.form["text_input"]
+            session["previous"] = previous
+            session["previous_word"] = previous_word
+            session["inputs"] = inputs
+            session["inputs_sort"] = inputs_sort
+            session["current"] = current
 
-            if previous:
-                inputs[previous_word] = previous
-                current = main(user_input, random_word)[user_input]
-                previous = current
-                previous_word = user_input
-            else:
-                current = main(user_input, random_word)[user_input]
-                previous = current
-                previous_word = user_input
-
-        inputs_sort = sorted(inputs.items(), key=lambda x: float(x[1]), reverse=True)
-        inputs_sort_percent = {
-            word: "{:.2%}".format(float(score)) for word, score in inputs_sort
-        }
-        current_percent = "{:.2%}".format(current)
-
-        #    if inputs_sort:
-        #        hint = provide_hint(random_word, synonyms, inputs_sort[0][1])
-        # print(inputs_sort[0][1])
-        # print(hint)
-        # print(inputs_sort_percent.items())
-
-        # if len(inputs_sort) > 1:
-        #    hint = provide_hint(
-        #        random_word, synonyms, float(inputs_sort[0][1].replace("%", ""))
-        #    )
-        # else:
-        #    hint = "no hints available"
-        # try:
-        #    hint = provide_hint(synonyms, inputs_sort[0][1].replace("%", ""))
-        # except:
-        #    hint = "no hints available"
-        # print(hint)
-        # iif get_hints:
-        #    print("bogos binted")
-        # hints = provide_hints(random_word, synonyms, inputs)
-        # for word in hints:
-        #    inputs[word] = hints[word]
-
-        return render_template(
-            "index.html",
-            current_percent=current_percent,
-            input_word=user_input,
-            inputs=inputs_sort_percent.items(),
-            hint=hint,
-        )
+            return render_template(
+                "index.html",
+                current_percent=current_percent,
+                input_word=user_input,
+                inputs=inputs_sort_percent.items(),
+                hint=hint,
+            )
     return render_template("index.html")
 
 
