@@ -25,6 +25,8 @@ def index():
 
     if "inputs_sort" not in session:
         session["inputs_sort"] = []
+    if "inputs_sort_percent" not in session:
+        session["inputs_sort_percent"] = {}
 
     if "current" not in session:
         session["current"] = 0.0
@@ -33,6 +35,7 @@ def index():
     previous_word = session["previous_word"]
     inputs = session["inputs"]
     inputs_sort = session["inputs_sort"]
+    inputs_sort_percent = session["inputs_sort_percent"]
     current = session["current"]
 
     random_word = "treasure"
@@ -46,6 +49,7 @@ def index():
     else:
         hint = None
         get_hints = request.form.get("get_hints")
+        print(inputs)
 
         if request.method == "POST":
             print(request.form)
@@ -55,23 +59,38 @@ def index():
                     hints = provide_hint(
                         random_word, synonyms, max([inputs_sort[0][1], current])
                     )
-                else:
-                    hints = provide_hint(random_word, synonyms, 0.0)
-
-                if hints:
                     inputs[previous_word] = previous
                     user_input, current = hints
                     previous = current
                     previous_word = user_input
-                else:
-                    user_input, current = "", 0.0
 
-                inputs_sort = sorted(
-                    inputs.items(), key=lambda x: float(x[1]), reverse=True
-                )
-                inputs_sort_percent = {
-                    word: "{:.2%}".format(float(score)) for word, score in inputs_sort
-                }
+                    inputs_sort = sorted(
+                        inputs.items(), key=lambda x: float(x[1]), reverse=True
+                    )
+                    inputs_sort_percent = {
+                        word: "{:.2%}".format(float(score))
+                        for word, score in inputs_sort
+                    }
+                elif current:
+                    inputs[previous_word] = previous
+                    inputs_sort = sorted(
+                        inputs.items(), key=lambda x: float(x[1]), reverse=True
+                    )
+                    inputs_sort_percent = {
+                        word: "{:.2%}".format(float(score))
+                        for word, score in inputs_sort
+                    }
+                    hints = provide_hint(random_word, synonyms, current)
+                    user_input, current = hints
+                    previous = current
+                    previous_word = user_input
+
+                else:
+                    hints = provide_hint(random_word, synonyms, max([current, 0]))
+                    user_input, current = hints
+                    previous = current
+                    previous_word = user_input
+
                 current_percent = "{:.2%}".format(current)
 
             else:
@@ -82,23 +101,27 @@ def index():
                     current = main(user_input, random_word)[user_input]
                     previous = current
                     previous_word = user_input
+
+                    inputs_sort = sorted(
+                        inputs.items(), key=lambda x: float(x[1]), reverse=True
+                    )
+                    inputs_sort_percent = {
+                        word: "{:.2%}".format(float(score))
+                        for word, score in inputs_sort
+                    }
+
                 else:
                     current = main(user_input, random_word)[user_input]
                     previous = current
                     previous_word = user_input
 
-            inputs_sort = sorted(
-                inputs.items(), key=lambda x: float(x[1]), reverse=True
-            )
-            inputs_sort_percent = {
-                word: "{:.2%}".format(float(score)) for word, score in inputs_sort
-            }
             current_percent = "{:.2%}".format(current)
 
             session["previous"] = previous
             session["previous_word"] = previous_word
             session["inputs"] = inputs
             session["inputs_sort"] = inputs_sort
+            session["inputs_sort_percent"] = inputs_sort_percent
             session["current"] = current
 
             return render_template(
