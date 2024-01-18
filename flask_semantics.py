@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for
 
 from semantics import main, random_word_generator, provide_hint
 
@@ -8,12 +8,17 @@ app = Flask(__name__)
 app.secret_key = "secret_key"
 
 
-# random_word = random_word_generator()["random_word"]
-
-
 @app.route("/", methods=["GET", "POST"])
 def index():
-    # Initialize session variables
+    # Initialise session variables
+    if "random_word" not in session and "synonyms" not in session:
+        word_data = random_word_generator()
+        session["random_word"] = word_data["random_word"]
+        session["synonyms"] = word_data["synonyms"]
+
+    if "synonyms" not in session:
+        session["synonyms"] = []
+
     if "previous" not in session:
         session["previous"] = None
 
@@ -25,12 +30,15 @@ def index():
 
     if "inputs_sort" not in session:
         session["inputs_sort"] = []
+
     if "inputs_sort_percent" not in session:
         session["inputs_sort_percent"] = {}
 
     if "current" not in session:
         session["current"] = 0.0
 
+    random_word = session["random_word"]
+    synonyms = session["synonyms"]
     previous = session["previous"]
     previous_word = session["previous_word"]
     inputs = session["inputs"]
@@ -38,18 +46,19 @@ def index():
     inputs_sort_percent = session["inputs_sort_percent"]
     current = session["current"]
 
-    random_word = "treasure"
-    synonyms = ["money", "ship", "island", "riches", "pirates", "silver"]
+    #    random_word = "treasure"
+    #    synonyms = ["money", "ship", "island", "riches", "pirates", "silver"]
+
+    print(random_word)
+    print(synonyms)
 
     restart = request.form.get("restart_game")
     if restart:
-        print("bogos binted")
         [session.pop(key) for key in list(session.keys())]
 
     else:
         hint = None
         get_hints = request.form.get("get_hints")
-        print(inputs)
 
         if request.method == "POST":
             print(request.form)
@@ -132,6 +141,16 @@ def index():
                 hint=hint,
             )
     return render_template("index.html")
+
+
+@app.route("/give_up", methods=["POST"])
+def give_up():
+    print(request.form)
+    if request.form.get("start_new") == "true":
+        session.clear()
+        return redirect(url_for("index"))
+    else:
+        return render_template("give_up.html", random_word=session["random_word"])
 
 
 if __name__ == "__main__":

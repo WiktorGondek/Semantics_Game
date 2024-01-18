@@ -43,7 +43,7 @@ def random_word_generator():
         else:
             print("Error:", response.status_code, response.text)
 
-    return {"random_word": random_word, "thesaurus": thes_dict}
+    return {"random_word": random_word, "synonyms": thes_dict["synonyms"]}
 
 
 def semantics(word, input_word):

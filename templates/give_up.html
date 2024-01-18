@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Reveal Answer</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+        .result-container {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            margin: 20px;
+            padding: 20px;
+        }
+        .result-text {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 40px;
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h1>Semantics game</h1>
+        <p>The correct word was:</p>
+        <p class="result-text">{{ random_word }}</p>
+        <form method="post" action="/give_up" id="myForm">
+            <input type="hidden" name="start_new" id="startNew" value=""> 
+        </form>
+        <button type="button" onclick="startNew()">New game</button>
+    </div>
+</body>
+</html>
+
+<script>
+    function startNew() {
+            console.log("Start new button has been pressed")
+            document.getElementById("startNew").value = "true";
+            document.getElementById("myForm").submit();
+        }
+</script>
