@@ -9,7 +9,8 @@ app.secret_key = "secret_key"
 
 
 @app.route("/", methods=["GET", "POST"])
-def index():
+def main_page():
+    """Main page to handle text input"""
     # Initialise session variables
     if "random_word" not in session and "synonyms" not in session:
         word_data = random_word_generator()
@@ -46,22 +47,20 @@ def index():
     inputs_sort_percent = session["inputs_sort_percent"]
     current = session["current"]
 
-    #    random_word = "treasure"
-    #    synonyms = ["money", "ship", "island", "riches", "pirates", "silver"]
-
     print(synonyms)
 
+    # Clear session variables when restart button pressed
     restart = request.form.get("restart_game")
     if restart:
         [session.pop(key) for key in list(session.keys())]
 
     else:
-        hint = None
         get_hints = request.form.get("get_hints")
 
         if request.method == "POST":
             print(request.form)
 
+            # Handle case where get hint button is pressed
             if get_hints:
                 inputs[previous_word] = previous
                 if inputs_sort:
@@ -70,31 +69,38 @@ def index():
                         if inputs_sort[0][1] is not None
                         else current
                     )
-                    # current = max(inputs_sort[0][1], current)
 
+                # Determine the next hint from synonyms
                 hints = provide_hint(random_word, synonyms, current)
                 user_input, current = hints
                 previous = current
                 previous_word = user_input
 
+                # Sort the inputs dictionary
                 inputs_sort = sorted(
                     inputs.items(),
                     key=lambda x: float("-inf") if x[1] is None else x[1],
                     reverse=True,
                 )
+
+                # Return percentage values in inputs_sort
                 inputs_sort_percent = {
                     word: "{:.2%}".format(score)
                     for word, score in inputs_sort
                     if score is not None
                 }
+
+                # Return percentage value for current word
                 current_percent = "{:.2%}".format(current)
 
+            # Handle case where text is input into text box
             else:
                 user_input = request.form["text_input"]
 
+                # Handle case where previous word exists
                 if previous:
                     inputs[previous_word] = previous
-                    current = main(user_input, random_word)[user_input]
+                    current = main(random_word, user_input)[user_input]
                     previous = current
 
                     inputs_sort = sorted(
@@ -109,13 +115,15 @@ def index():
                     }
                     previous_word = user_input
 
+                # Handle case where no previous word exists
                 else:
-                    current = main(user_input, random_word)[user_input]
+                    current = main(random_word, user_input)[user_input]
                     previous = current
                     previous_word = user_input
 
             current_percent = "{:.2%}".format(current)
 
+            # Assign session variables
             session["previous"] = previous
             session["previous_word"] = previous_word
             session["inputs"] = inputs
@@ -124,26 +132,29 @@ def index():
             session["current"] = current
 
             return render_template(
-                "index.html",
+                "main_page.html",
                 current_percent=current_percent,
                 input_word=user_input,
                 inputs=inputs_sort_percent.items(),
-                hint=hint,
             )
-    return render_template("index.html")
+    return render_template("main_page.html")
 
 
 @app.route("/give_up", methods=["POST"])
 def give_up():
-    print(request.form)
+    """Page to handle the case when give up button is pressed"""
+
     if "random_word" in session:
+        # Handle case when start new button is pressed
         if request.form.get("start_new") == "true":
             session.clear()
-            return redirect(url_for("index"))
+            return redirect(url_for("main_page"))
+        # Return the give_up.html template
         else:
             return render_template("give_up.html", random_word=session["random_word"])
+    # Redirect to main page if no random_word exists
     else:
-        return redirect(url_for("index"))
+        return redirect(url_for("main_page"))
 
 
 if __name__ == "__main__":

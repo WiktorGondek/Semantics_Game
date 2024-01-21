@@ -1,0 +1,90 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+.input-container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    padding: 20px;
+
+}
+.buttons-container {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    margin:20px;
+    align-items: center;
+    justify-content: center;
+}
+.table-container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#myForm {
+    display: flex;
+    flex-direction: unset;
+    align-items: center;
+    margin: 10px;
+
+}
+#textInput {
+    margin-right: 10px;
+}
+#hint {
+    display: none;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+}
+#Current {
+    font-size: 18px;
+    margin-bottom: 30px;
+    width: 80%;
+}
+table {
+    width: 70%;
+    margin: auto;
+}
+td, th {
+    padding: 5px;
+}
+
+td:first-child,
+th:first-child {
+    width: 10%;
+    text-align: left;
+    word-wrap: break-word;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+td:nth-child(2),
+th:nth-child(2) {
+    width: 80%; 
+}
+
+td:last-child,
+th:last-child {
+    width: 10%;
+    text-align: right;
+    margin-left: 10px;
+}
+.bar-container {
+    width: 100%;
+    height: 10px;
+    background-color: #f2f2f2;
+    margin-bottom: 5px;
+}
+.bar {
+    height: 10px;
+    background-color: #3498db;
+}
+
