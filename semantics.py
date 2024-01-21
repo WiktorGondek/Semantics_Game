@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import json
-from py_thesaurus import Thesaurus
 import random
 import requests
 from sentence_transformers import SentenceTransformer, util

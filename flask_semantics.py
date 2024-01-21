@@ -49,7 +49,6 @@ def index():
     #    random_word = "treasure"
     #    synonyms = ["money", "ship", "island", "riches", "pirates", "silver"]
 
-    print(random_word)
     print(synonyms)
 
     restart = request.form.get("restart_game")
@@ -64,42 +63,30 @@ def index():
             print(request.form)
 
             if get_hints:
+                inputs[previous_word] = previous
                 if inputs_sort:
-                    hints = provide_hint(
-                        random_word, synonyms, max([inputs_sort[0][1], current])
+                    current = (
+                        max(inputs_sort[0][1], current)
+                        if inputs_sort[0][1] is not None
+                        else current
                     )
-                    inputs[previous_word] = previous
-                    user_input, current = hints
-                    previous = current
-                    previous_word = user_input
+                    # current = max(inputs_sort[0][1], current)
 
-                    inputs_sort = sorted(
-                        inputs.items(), key=lambda x: float(x[1]), reverse=True
-                    )
-                    inputs_sort_percent = {
-                        word: "{:.2%}".format(float(score))
-                        for word, score in inputs_sort
-                    }
-                elif current:
-                    inputs[previous_word] = previous
-                    inputs_sort = sorted(
-                        inputs.items(), key=lambda x: float(x[1]), reverse=True
-                    )
-                    inputs_sort_percent = {
-                        word: "{:.2%}".format(float(score))
-                        for word, score in inputs_sort
-                    }
-                    hints = provide_hint(random_word, synonyms, current)
-                    user_input, current = hints
-                    previous = current
-                    previous_word = user_input
+                hints = provide_hint(random_word, synonyms, current)
+                user_input, current = hints
+                previous = current
+                previous_word = user_input
 
-                else:
-                    hints = provide_hint(random_word, synonyms, max([current, 0]))
-                    user_input, current = hints
-                    previous = current
-                    previous_word = user_input
-
+                inputs_sort = sorted(
+                    inputs.items(),
+                    key=lambda x: float("-inf") if x[1] is None else x[1],
+                    reverse=True,
+                )
+                inputs_sort_percent = {
+                    word: "{:.2%}".format(score)
+                    for word, score in inputs_sort
+                    if score is not None
+                }
                 current_percent = "{:.2%}".format(current)
 
             else:
@@ -109,15 +96,18 @@ def index():
                     inputs[previous_word] = previous
                     current = main(user_input, random_word)[user_input]
                     previous = current
-                    previous_word = user_input
 
                     inputs_sort = sorted(
-                        inputs.items(), key=lambda x: float(x[1]), reverse=True
+                        inputs.items(),
+                        key=lambda x: float("-inf") if x[1] is None else x[1],
+                        reverse=True,
                     )
                     inputs_sort_percent = {
-                        word: "{:.2%}".format(float(score))
+                        word: "{:.2%}".format(score)
                         for word, score in inputs_sort
+                        if score is not None
                     }
+                    previous_word = user_input
 
                 else:
                     current = main(user_input, random_word)[user_input]
@@ -146,11 +136,14 @@ def index():
 @app.route("/give_up", methods=["POST"])
 def give_up():
     print(request.form)
-    if request.form.get("start_new") == "true":
-        session.clear()
-        return redirect(url_for("index"))
+    if "random_word" in session:
+        if request.form.get("start_new") == "true":
+            session.clear()
+            return redirect(url_for("index"))
+        else:
+            return render_template("give_up.html", random_word=session["random_word"])
     else:
-        return render_template("give_up.html", random_word=session["random_word"])
+        return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
