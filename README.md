@@ -9,5 +9,10 @@ To install the required python packages:
 ```
 pip install -r requirements.txt
 ```
+# Example
 
+To run the program:
+```
+./flask_semantics.py
+```
 
