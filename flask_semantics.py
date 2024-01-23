@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
-from flask import Flask, render_template, request, session, redirect, url_for
+import argparse
 
-from semantics import main, random_word_generator, provide_hint
+from flask import Flask, redirect, render_template, request, session, url_for
+
+from semantics import main, provide_hint, random_word_generator
 
 app = Flask(__name__)
 app.secret_key = "secret_key"
@@ -157,5 +159,14 @@ def give_up():
         return redirect(url_for("main_page"))
 
 
+def create_app():
+    return app
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--debug", action="store_true")
+    args = parser.parse_args()
+    print(args)
+
+    app.run(host="0.0.0.0", port=8000, **vars(args))
